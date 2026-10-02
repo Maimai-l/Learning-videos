@@ -14,7 +14,7 @@ Writes DIR/audio/<id>.wav and <id>.json in the same format as the skill's tts.py
 LESSON_VIDEO_TTS, or under ~/.claude/skills. Needs: pip install edge-tts; ffmpeg.
 Do not run `tts.py DIR all` on an Edge script: it would resynthesize every segment with Gemini.
 """
-import asyncio, glob, hashlib, json, os, subprocess, sys, tempfile
+import asyncio, glob, hashlib, json, os, re, subprocess, sys, tempfile
 
 RATE_HZ = 24000
 CONCURRENCY = 4
@@ -28,6 +28,11 @@ def die(msg):
     sys.exit(1)
 
 
+def spoken(text):
+    # Edge's Chinese voices read "_" aloud (as the word for underscore); SHOP_ORDER should sound like SHOP ORDER.
+    return re.sub(r"(?<=\w)_(?=\w)", " ", text.strip())
+
+
 def use_proxy_ca():
     # edge-tts verifies TLS with certifi's bundle; behind a TLS-terminating proxy it needs the proxy's CA.
     ca = os.environ.get("SSL_CERT_FILE")
@@ -37,7 +42,7 @@ def use_proxy_ca():
 
 
 def seg_hash(voice, rate, text):
-    key = json.dumps(["edge-tts", voice, rate, text.strip()], ensure_ascii=False)
+    key = json.dumps(["edge-tts", voice, rate, spoken(text)], ensure_ascii=False)
     return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
 
 
@@ -56,7 +61,7 @@ async def synth_one(sem, seg, voice, rate, audio_dir):
         for attempt in range(5):
             try:
                 with tempfile.NamedTemporaryFile(suffix=".mp3") as mp3:
-                    await edge_tts.Communicate(seg["say"].strip(), voice, rate=rate).save(mp3.name)
+                    await edge_tts.Communicate(spoken(seg["say"]), voice, rate=rate).save(mp3.name)
                     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp3.name, "-af", TRIM,
                                     "-ac", "1", "-ar", str(RATE_HZ), "-c:a", "pcm_s16le", wav], check=True)
                 break

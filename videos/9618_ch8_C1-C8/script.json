@@ -11,10 +11,10 @@
    "C7",
    "C8"
   ],
-  "model": "gemini-3.8-flash-tts",
-  "voice": "Charon",
-  "style": "A calm, clear computer science teacher speaking Mandarin Chinese to one secondary-school student. Even pace, no exaggerated emotion. English terms, table names, field names and SQL keywords are pronounced in natural English; read identifiers such as CustomerID or STUDENT_TEST as words, and read SQL keywords like SELECT or WHERE in English. Short natural pause at each comma and semicolon.",
-  "chars_per_second": 4.5
+  "model": "edge-tts",
+  "voice": "zh-CN-YunjianNeural",
+  "chars_per_second": 4.5,
+  "rate": "+10%"
  },
  "segments": [
   {

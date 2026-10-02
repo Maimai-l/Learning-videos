@@ -1,0 +1,821 @@
+{
+ "fps": 30,
+ "duration": 1887.296,
+ "frames": 56619,
+ "model": "edge-tts",
+ "voice": "zh-CN-YunjianNeural",
+ "segments": [
+  {
+   "id": "S000",
+   "concept": "",
+   "start": 0.6,
+   "speech_end": 19.27,
+   "end": 20.27
+  },
+  {
+   "id": "C1_01",
+   "concept": "C1",
+   "start": 20.27,
+   "speech_end": 37.897,
+   "end": 38.497
+  },
+  {
+   "id": "C1_02",
+   "concept": "C1",
+   "start": 38.497,
+   "speech_end": 51.05,
+   "end": 51.651
+  },
+  {
+   "id": "C1_03",
+   "concept": "C1",
+   "start": 51.651,
+   "speech_end": 74.793,
+   "end": 75.393
+  },
+  {
+   "id": "C1_04",
+   "concept": "C1",
+   "start": 75.393,
+   "speech_end": 93.799,
+   "end": 94.399
+  },
+  {
+   "id": "C1_05",
+   "concept": "C1",
+   "start": 94.399,
+   "speech_end": 103.452,
+   "end": 104.052
+  },
+  {
+   "id": "C1_06",
+   "concept": "C1",
+   "start": 104.052,
+   "speech_end": 119.086,
+   "end": 119.686
+  },
+  {
+   "id": "C1_07",
+   "concept": "C1",
+   "start": 119.686,
+   "speech_end": 130.195,
+   "end": 130.795
+  },
+  {
+   "id": "C1_08",
+   "concept": "C1",
+   "start": 130.795,
+   "speech_end": 143.829,
+   "end": 144.429
+  },
+  {
+   "id": "C1_09",
+   "concept": "C1",
+   "start": 144.429,
+   "speech_end": 155.796,
+   "end": 156.396
+  },
+  {
+   "id": "C1_10",
+   "concept": "C1",
+   "start": 156.396,
+   "speech_end": 167.913,
+   "end": 168.513
+  },
+  {
+   "id": "C1_11",
+   "concept": "C1",
+   "start": 168.513,
+   "speech_end": 180.962,
+   "end": 181.762
+  },
+  {
+   "id": "C1_12",
+   "concept": "C1",
+   "start": 181.762,
+   "speech_end": 194.192,
+   "end": 194.792
+  },
+  {
+   "id": "C1_13",
+   "concept": "C1",
+   "start": 194.792,
+   "speech_end": 211.721,
+   "end": 212.921
+  },
+  {
+   "id": "C2_01",
+   "concept": "C2",
+   "start": 212.921,
+   "speech_end": 228.298,
+   "end": 228.898
+  },
+  {
+   "id": "C2_02",
+   "concept": "C2",
+   "start": 228.898,
+   "speech_end": 241.535,
+   "end": 242.135
+  },
+  {
+   "id": "C2_03",
+   "concept": "C2",
+   "start": 242.135,
+   "speech_end": 250.214,
+   "end": 250.814
+  },
+  {
+   "id": "C2_04",
+   "concept": "C2",
+   "start": 250.814,
+   "speech_end": 262.44,
+   "end": 263.04
+  },
+  {
+   "id": "C2_05",
+   "concept": "C2",
+   "start": 263.04,
+   "speech_end": 279.192,
+   "end": 279.792
+  },
+  {
+   "id": "C2_06",
+   "concept": "C2",
+   "start": 279.792,
+   "speech_end": 299.49,
+   "end": 300.09
+  },
+  {
+   "id": "C2_07",
+   "concept": "C2",
+   "start": 300.09,
+   "speech_end": 321.959,
+   "end": 322.559
+  },
+  {
+   "id": "C2_08",
+   "concept": "C2",
+   "start": 322.559,
+   "speech_end": 342.542,
+   "end": 343.142
+  },
+  {
+   "id": "C2_09",
+   "concept": "C2",
+   "start": 343.142,
+   "speech_end": 359.848,
+   "end": 360.448
+  },
+  {
+   "id": "C2_10",
+   "concept": "C2",
+   "start": 360.448,
+   "speech_end": 379.573,
+   "end": 380.173
+  },
+  {
+   "id": "C2_11",
+   "concept": "C2",
+   "start": 380.173,
+   "speech_end": 395.318,
+   "end": 395.918
+  },
+  {
+   "id": "C2_12",
+   "concept": "C2",
+   "start": 395.918,
+   "speech_end": 409.442,
+   "end": 410.242
+  },
+  {
+   "id": "C2_13",
+   "concept": "C2",
+   "start": 410.242,
+   "speech_end": 424.465,
+   "end": 425.065
+  },
+  {
+   "id": "C2_14",
+   "concept": "C2",
+   "start": 425.065,
+   "speech_end": 433.989,
+   "end": 434.589
+  },
+  {
+   "id": "C2_15",
+   "concept": "C2",
+   "start": 434.589,
+   "speech_end": 445.872,
+   "end": 447.072
+  },
+  {
+   "id": "C3_01",
+   "concept": "C3",
+   "start": 447.072,
+   "speech_end": 460.303,
+   "end": 460.903
+  },
+  {
+   "id": "C3_02",
+   "concept": "C3",
+   "start": 460.903,
+   "speech_end": 475.027,
+   "end": 475.627
+  },
+  {
+   "id": "C3_03",
+   "concept": "C3",
+   "start": 475.627,
+   "speech_end": 484.209,
+   "end": 484.809
+  },
+  {
+   "id": "C3_04",
+   "concept": "C3",
+   "start": 484.809,
+   "speech_end": 499.677,
+   "end": 500.277
+  },
+  {
+   "id": "C3_05",
+   "concept": "C3",
+   "start": 500.277,
+   "speech_end": 515.28,
+   "end": 515.88
+  },
+  {
+   "id": "C3_06",
+   "concept": "C3",
+   "start": 515.88,
+   "speech_end": 537.717,
+   "end": 538.517
+  },
+  {
+   "id": "C3_07",
+   "concept": "C3",
+   "start": 538.517,
+   "speech_end": 554.755,
+   "end": 555.355
+  },
+  {
+   "id": "C3_08",
+   "concept": "C3",
+   "start": 555.355,
+   "speech_end": 566.62,
+   "end": 567.22
+  },
+  {
+   "id": "C3_09",
+   "concept": "C3",
+   "start": 567.22,
+   "speech_end": 594.144,
+   "end": 594.944
+  },
+  {
+   "id": "C3_10",
+   "concept": "C3",
+   "start": 594.944,
+   "speech_end": 609.55,
+   "end": 610.15
+  },
+  {
+   "id": "C3_11",
+   "concept": "C3",
+   "start": 610.15,
+   "speech_end": 625.548,
+   "end": 626.148
+  },
+  {
+   "id": "C3_12",
+   "concept": "C3",
+   "start": 626.148,
+   "speech_end": 637.512,
+   "end": 638.112
+  },
+  {
+   "id": "C3_13",
+   "concept": "C3",
+   "start": 638.112,
+   "speech_end": 654.39,
+   "end": 655.19
+  },
+  {
+   "id": "C3_14",
+   "concept": "C3",
+   "start": 655.19,
+   "speech_end": 669.106,
+   "end": 669.706
+  },
+  {
+   "id": "C3_15",
+   "concept": "C3",
+   "start": 669.706,
+   "speech_end": 689.2,
+   "end": 690.4
+  },
+  {
+   "id": "C4_01",
+   "concept": "C4",
+   "start": 690.4,
+   "speech_end": 705.852,
+   "end": 706.452
+  },
+  {
+   "id": "C4_02",
+   "concept": "C4",
+   "start": 706.452,
+   "speech_end": 724.344,
+   "end": 724.944
+  },
+  {
+   "id": "C4_03",
+   "concept": "C4",
+   "start": 724.944,
+   "speech_end": 733.737,
+   "end": 734.337
+  },
+  {
+   "id": "C4_04",
+   "concept": "C4",
+   "start": 734.337,
+   "speech_end": 756.956,
+   "end": 757.756
+  },
+  {
+   "id": "C4_05",
+   "concept": "C4",
+   "start": 757.756,
+   "speech_end": 777.078,
+   "end": 777.678
+  },
+  {
+   "id": "C4_06",
+   "concept": "C4",
+   "start": 777.678,
+   "speech_end": 789.916,
+   "end": 790.516
+  },
+  {
+   "id": "C4_07",
+   "concept": "C4",
+   "start": 790.516,
+   "speech_end": 804.829,
+   "end": 805.429
+  },
+  {
+   "id": "C4_08",
+   "concept": "C4",
+   "start": 805.429,
+   "speech_end": 821.326,
+   "end": 821.926
+  },
+  {
+   "id": "C4_09",
+   "concept": "C4",
+   "start": 821.926,
+   "speech_end": 839.719,
+   "end": 840.319
+  },
+  {
+   "id": "C4_10",
+   "concept": "C4",
+   "start": 840.319,
+   "speech_end": 853.563,
+   "end": 854.163
+  },
+  {
+   "id": "C4_11",
+   "concept": "C4",
+   "start": 854.163,
+   "speech_end": 870.275,
+   "end": 870.875
+  },
+  {
+   "id": "C4_12",
+   "concept": "C4",
+   "start": 870.875,
+   "speech_end": 886.462,
+   "end": 887.462
+  },
+  {
+   "id": "C4_13",
+   "concept": "C4",
+   "start": 887.462,
+   "speech_end": 901.209,
+   "end": 901.809
+  },
+  {
+   "id": "C4_14",
+   "concept": "C4",
+   "start": 901.809,
+   "speech_end": 912.788,
+   "end": 913.388
+  },
+  {
+   "id": "C4_15",
+   "concept": "C4",
+   "start": 913.388,
+   "speech_end": 937.511,
+   "end": 938.111
+  },
+  {
+   "id": "C4_16",
+   "concept": "C4",
+   "start": 938.111,
+   "speech_end": 955.368,
+   "end": 955.968
+  },
+  {
+   "id": "C4_17",
+   "concept": "C4",
+   "start": 955.968,
+   "speech_end": 981.349,
+   "end": 981.949
+  },
+  {
+   "id": "C4_18",
+   "concept": "C4",
+   "start": 981.949,
+   "speech_end": 997.898,
+   "end": 998.498
+  },
+  {
+   "id": "C4_19",
+   "concept": "C4",
+   "start": 998.498,
+   "speech_end": 1005.458,
+   "end": 1006.058
+  },
+  {
+   "id": "C4_20",
+   "concept": "C4",
+   "start": 1006.058,
+   "speech_end": 1020.778,
+   "end": 1021.978
+  },
+  {
+   "id": "C5_01",
+   "concept": "C5",
+   "start": 1021.978,
+   "speech_end": 1037.048,
+   "end": 1037.648
+  },
+  {
+   "id": "C5_02",
+   "concept": "C5",
+   "start": 1037.648,
+   "speech_end": 1050.686,
+   "end": 1051.286
+  },
+  {
+   "id": "C5_03",
+   "concept": "C5",
+   "start": 1051.286,
+   "speech_end": 1068.842,
+   "end": 1069.442
+  },
+  {
+   "id": "C5_04",
+   "concept": "C5",
+   "start": 1069.442,
+   "speech_end": 1080.617,
+   "end": 1081.217
+  },
+  {
+   "id": "C5_05",
+   "concept": "C5",
+   "start": 1081.217,
+   "speech_end": 1089.938,
+   "end": 1090.538
+  },
+  {
+   "id": "C5_06",
+   "concept": "C5",
+   "start": 1090.538,
+   "speech_end": 1106.7,
+   "end": 1107.3
+  },
+  {
+   "id": "C5_07",
+   "concept": "C5",
+   "start": 1107.3,
+   "speech_end": 1114.918,
+   "end": 1115.518
+  },
+  {
+   "id": "C5_08",
+   "concept": "C5",
+   "start": 1115.518,
+   "speech_end": 1138.678,
+   "end": 1139.278
+  },
+  {
+   "id": "C5_09",
+   "concept": "C5",
+   "start": 1139.278,
+   "speech_end": 1162.167,
+   "end": 1162.767
+  },
+  {
+   "id": "C5_10",
+   "concept": "C5",
+   "start": 1162.767,
+   "speech_end": 1184.054,
+   "end": 1184.654
+  },
+  {
+   "id": "C5_11",
+   "concept": "C5",
+   "start": 1184.654,
+   "speech_end": 1202.884,
+   "end": 1203.484
+  },
+  {
+   "id": "C5_12",
+   "concept": "C5",
+   "start": 1203.484,
+   "speech_end": 1219.644,
+   "end": 1220.244
+  },
+  {
+   "id": "C5_13",
+   "concept": "C5",
+   "start": 1220.244,
+   "speech_end": 1229.568,
+   "end": 1230.168
+  },
+  {
+   "id": "C5_14",
+   "concept": "C5",
+   "start": 1230.168,
+   "speech_end": 1243.049,
+   "end": 1244.249
+  },
+  {
+   "id": "C6_01",
+   "concept": "C6",
+   "start": 1244.249,
+   "speech_end": 1273.246,
+   "end": 1273.846
+  },
+  {
+   "id": "C6_02",
+   "concept": "C6",
+   "start": 1273.846,
+   "speech_end": 1285.347,
+   "end": 1285.947
+  },
+  {
+   "id": "C6_03",
+   "concept": "C6",
+   "start": 1285.947,
+   "speech_end": 1306.72,
+   "end": 1307.32
+  },
+  {
+   "id": "C6_04",
+   "concept": "C6",
+   "start": 1307.32,
+   "speech_end": 1328.799,
+   "end": 1329.399
+  },
+  {
+   "id": "C6_05",
+   "concept": "C6",
+   "start": 1329.399,
+   "speech_end": 1333.006,
+   "end": 1333.606
+  },
+  {
+   "id": "C6_06",
+   "concept": "C6",
+   "start": 1333.606,
+   "speech_end": 1363.774,
+   "end": 1364.374
+  },
+  {
+   "id": "C6_07",
+   "concept": "C6",
+   "start": 1364.374,
+   "speech_end": 1387.068,
+   "end": 1387.668
+  },
+  {
+   "id": "C6_08",
+   "concept": "C6",
+   "start": 1387.668,
+   "speech_end": 1400.001,
+   "end": 1400.601
+  },
+  {
+   "id": "C6_09",
+   "concept": "C6",
+   "start": 1400.601,
+   "speech_end": 1407.91,
+   "end": 1408.51
+  },
+  {
+   "id": "C6_10",
+   "concept": "C6",
+   "start": 1408.51,
+   "speech_end": 1432.32,
+   "end": 1433.12
+  },
+  {
+   "id": "C6_11",
+   "concept": "C6",
+   "start": 1433.12,
+   "speech_end": 1449.407,
+   "end": 1450.007
+  },
+  {
+   "id": "C6_12",
+   "concept": "C6",
+   "start": 1450.007,
+   "speech_end": 1467.119,
+   "end": 1467.719
+  },
+  {
+   "id": "C6_13",
+   "concept": "C6",
+   "start": 1467.719,
+   "speech_end": 1480.745,
+   "end": 1481.345
+  },
+  {
+   "id": "C6_14",
+   "concept": "C6",
+   "start": 1481.345,
+   "speech_end": 1490.271,
+   "end": 1491.471
+  },
+  {
+   "id": "C7_01",
+   "concept": "C7",
+   "start": 1491.471,
+   "speech_end": 1507.813,
+   "end": 1508.413
+  },
+  {
+   "id": "C7_02",
+   "concept": "C7",
+   "start": 1508.413,
+   "speech_end": 1520.996,
+   "end": 1521.596
+  },
+  {
+   "id": "C7_03",
+   "concept": "C7",
+   "start": 1521.596,
+   "speech_end": 1537.046,
+   "end": 1537.646
+  },
+  {
+   "id": "C7_04",
+   "concept": "C7",
+   "start": 1537.646,
+   "speech_end": 1556.092,
+   "end": 1556.692
+  },
+  {
+   "id": "C7_05",
+   "concept": "C7",
+   "start": 1556.692,
+   "speech_end": 1576.915,
+   "end": 1577.515
+  },
+  {
+   "id": "C7_06",
+   "concept": "C7",
+   "start": 1577.515,
+   "speech_end": 1587.753,
+   "end": 1588.352
+  },
+  {
+   "id": "C7_07",
+   "concept": "C7",
+   "start": 1588.353,
+   "speech_end": 1600.918,
+   "end": 1601.518
+  },
+  {
+   "id": "C7_08",
+   "concept": "C7",
+   "start": 1601.518,
+   "speech_end": 1630.152,
+   "end": 1630.752
+  },
+  {
+   "id": "C7_09",
+   "concept": "C7",
+   "start": 1630.752,
+   "speech_end": 1663.107,
+   "end": 1663.907
+  },
+  {
+   "id": "C7_10",
+   "concept": "C7",
+   "start": 1663.907,
+   "speech_end": 1681.609,
+   "end": 1682.209
+  },
+  {
+   "id": "C7_11",
+   "concept": "C7",
+   "start": 1682.209,
+   "speech_end": 1703.891,
+   "end": 1704.491
+  },
+  {
+   "id": "C7_12",
+   "concept": "C7",
+   "start": 1704.491,
+   "speech_end": 1725.392,
+   "end": 1726.192
+  },
+  {
+   "id": "C7_13",
+   "concept": "C7",
+   "start": 1726.192,
+   "speech_end": 1741.698,
+   "end": 1742.298
+  },
+  {
+   "id": "C7_14",
+   "concept": "C7",
+   "start": 1742.298,
+   "speech_end": 1755.909,
+   "end": 1756.509
+  },
+  {
+   "id": "C7_15",
+   "concept": "C7",
+   "start": 1756.509,
+   "speech_end": 1761.594,
+   "end": 1762.794
+  },
+  {
+   "id": "C8_01",
+   "concept": "C8",
+   "start": 1762.794,
+   "speech_end": 1770.596,
+   "end": 1771.196
+  },
+  {
+   "id": "C8_02",
+   "concept": "C8",
+   "start": 1771.196,
+   "speech_end": 1791.91,
+   "end": 1792.51
+  },
+  {
+   "id": "C8_03",
+   "concept": "C8",
+   "start": 1792.51,
+   "speech_end": 1805.471,
+   "end": 1806.071
+  },
+  {
+   "id": "C8_04",
+   "concept": "C8",
+   "start": 1806.071,
+   "speech_end": 1821.217,
+   "end": 1821.817
+  },
+  {
+   "id": "C8_05",
+   "concept": "C8",
+   "start": 1821.817,
+   "speech_end": 1831.601,
+   "end": 1832.201
+  },
+  {
+   "id": "C8_06",
+   "concept": "C8",
+   "start": 1832.201,
+   "speech_end": 1853.067,
+   "end": 1853.667
+  },
+  {
+   "id": "C8_07",
+   "concept": "C8",
+   "start": 1853.667,
+   "speech_end": 1874.518,
+   "end": 1875.118
+  },
+  {
+   "id": "C8_08",
+   "concept": "C8",
+   "start": 1875.118,
+   "speech_end": 1880.941,
+   "end": 1881.941
+  },
+  {
+   "id": "S999",
+   "concept": "",
+   "start": 1881.941,
+   "speech_end": 1884.296,
+   "end": 1885.796
+  }
+ ]
+}

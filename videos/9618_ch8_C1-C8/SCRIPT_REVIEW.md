@@ -1,6 +1,6 @@
 # Script review
 
-Model `gemini-3.8-flash-tts`, voice `Charon`.
+Model `edge-tts`, voice `zh-CN-YunjianNeural`.
 
 | id | concept | narration (say) | on screen (show) | pause |
 |---|---|---|---|---|
