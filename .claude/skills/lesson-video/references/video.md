@@ -18,12 +18,12 @@ Scope: the concepts the user names. If none are named, ask.
 
 ## Stages
 
-Stop after each stage and tell the user what to review. Commit after each stage.
+Stop after each stage and tell the user what to review. Commit after each stage. Do every step yourself, including pull requests and merges when the user has asked for them; never hand the user commands to run.
 
 1. **Script**: read `script.md`, write `V/script.json`, run `python scripts/tts.py V review`; the user reads `V/SCRIPT_REVIEW.md`.
 2. **Audio**: run `python scripts/tts.py V all`, then make `V/narration.mp3` for listening (`ffmpeg -i V/narration.wav -b:a 64k V/narration.mp3`); the user listens to it. You cannot hear it: ask them to listen, especially for terms, numbers and English words.
 3. **Storyboard**: write `V/STORYBOARD.md`, in whatever form is clearest, using the times in `V/timeline.json`.
-4. **Build**: make the page `V/index.html` and review it (see "Review before handing over"). Do not render `V/final.mp4` in the cloud session unless the user asks: the user renders it on their own computer with one command (below), which is faster than the cloud VM.
+4. **Build**: make the page `V/index.html`, review it (see "Review before handing over"), then render `V/final.mp4` yourself (see "Final render") and send it to the user. The user does not run anything.
 
 A revision goes back to the earliest stage it affects.
 
@@ -76,12 +76,12 @@ The build stage is finished only when all of these are done; report what each fo
 
 If you cannot view images, say so: the visual check has then not been done.
 
-## Final render (the user, on their own computer)
+## Final render
 
-From the repository root, after pulling the branch:
+After the review, from the repository root:
 
 ```bash
 python scripts/final.py V
 ```
 
-It installs the render tool's packages the first time, rebuilds `V/narration.wav` from the committed segment audio, and writes `V/final.mp4`. It needs Node.js 18+, Google Chrome and ffmpeg. `--stills 12.5s,80s` instead renders only those frames into `V/check/`. For a quick look without rendering, serve the folder (`python -m http.server` in `V/`) and open it in Chrome; the page plays with the narration.
+It installs the render tool's packages the first time, rebuilds `V/narration.wav` from the committed segment audio, and writes `V/final.mp4` (on the cloud VM about 30 frames per second; run it in the background). `final.mp4` is not committed (GitHub refuses files over 100 MB): send it to the user as a file. `--stills 12.5s,80s` instead renders only those frames into `V/check/`.
