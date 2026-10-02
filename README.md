@@ -1,20 +1,20 @@
 # lesson-video 使用说明
 
-本文件给人看，模型读取的是 `SKILL.md` 和 `references/`。下文的 `<skill>` 指本技能文件夹的路径：放在仓库中时为 `.claude/skills/lesson-video`。
+本文件给人看。工具脚本在仓库根目录的 `scripts/`，风格参考在 `style/`；模型读取的说明（`SKILL.md`、`references/`、`assets/example/`）在 `.claude/skills/lesson-video/`，那是 Claude Code 加载技能的固定位置，平时不需要打开。
 
 ## 文件
 
 | 文件 | 内容 | 来源 |
 |---|---|---|
-| `SKILL.md` | 入口：两部分（素材、视频）、为何分开会话、文件索引 | 新写 |
-| `references/prep.md` | 生成课程计划的步骤 | lesson 技能的 prep，改为视频用：目标分理解与准确输出、保留推理、去掉配图与课时 |
-| `references/plan-format.md` | 课程计划格式 | lesson 技能，增加 Reasoning，去掉课时与配图字段 |
-| `references/parallel-prep.md`、`problems-prep.md` | 多章并行、材料缺失时的处理 | lesson 技能 |
-| `references/video.md` | 视频：要求、四个阶段、工具接口、检查方法 | 新写 |
-| `references/script.md` | 脚本阶段：两个目标、内容来源、语言 | 新写 |
+| `.claude/skills/lesson-video/SKILL.md` | 入口：两部分（素材、视频）、为何分开会话、文件索引 | 新写 |
+| `.claude/skills/lesson-video/references/prep.md` | 生成课程计划的步骤 | lesson 技能的 prep，改为视频用：目标分理解与准确输出、保留推理、去掉配图与课时 |
+| `.claude/skills/lesson-video/references/plan-format.md` | 课程计划格式 | lesson 技能，增加 Reasoning，去掉课时与配图字段 |
+| `.claude/skills/lesson-video/references/parallel-prep.md`、`problems-prep.md` | 多章并行、材料缺失时的处理 | lesson 技能 |
+| `.claude/skills/lesson-video/references/video.md` | 视频：要求、四个阶段、工具接口、检查方法 | 新写 |
+| `.claude/skills/lesson-video/references/script.md` | 脚本阶段：两个目标、内容来源、语言 | 新写 |
 | `scripts/` | 配音、公式、渲染、检查工具，环境脚本 | `render.mjs`、`layout-check.mjs` 改编自 iArt（MIT） |
-| `assets/example/` | 接口示例（从 1 加到 100） | 新写 |
-| `assets/style/` | 风格参考材料，放入截图即生效 | 你提供 |
+| `.claude/skills/lesson-video/assets/example/` | 接口示例（从 1 加到 100） | 新写 |
+| `style/` | 风格参考材料，放入截图即生效 | 你提供 |
 
 输出位置：课程计划在仓库根目录的 `lessons/`，视频在 `videos/`，首次使用时自动创建。
 
@@ -30,7 +30,7 @@
 检查环境：
 
 ```
-运行 bash <skill>/scripts/selftest.sh --tts，把输出贴给我，并查看 /tmp/lesson-video-selftest/out/sheet.jpg。
+运行 bash scripts/selftest.sh --tts，把输出贴给我，并查看 /tmp/lesson-video-selftest/out/sheet.jpg。
 ```
 
 ## 提示词
@@ -63,10 +63,10 @@
 
 ## 本机预览与最终渲染
 
-技能已在仓库中（`.claude/skills/lesson-video`），不需要另外下载。拉取会话分支后，在仓库根目录执行：
+拉取分支后，在仓库根目录执行：
 
 ```
-python .claude/skills/lesson-video/scripts/final.py videos/<视频名>
+python scripts/final.py videos/<视频名>
 ```
 
 该命令首次运行时安装渲染工具的依赖，从已提交的分段音频重建 `narration.wav`，然后生成 `videos/<视频名>/final.mp4`。需要 Node.js 18 以上、Google Chrome、ffmpeg。只看几帧：在命令后加 `--stills 12.5s,80s`，图片输出到视频文件夹的 `check/`。

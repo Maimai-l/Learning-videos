@@ -8,7 +8,7 @@ What the video is for is in `script.md`.
 - Narration is in the student's language; terms on screen are in the plan's `answer_language`.
 - What is on screen at each moment is what the narration is talking about at that moment.
 - Every formula, number and term on screen is correct and matches the plan.
-- The look: if `assets/style/` in this skill contains reference material, take the look from it. Otherwise choose one and tell the user what you chose.
+- The look: if `style/` at the repository root contains reference material, take the look from it. Otherwise choose one and tell the user what you chose.
 
 The plan is in `lessons/<syllabus>_ch<chapter>/`. Read only the plan.
 
@@ -20,8 +20,8 @@ Scope: the concepts the user names. If none are named, ask.
 
 Stop after each stage and tell the user what to review. Commit after each stage.
 
-1. **Script**: read `script.md`, write `V/script.json`, run `python <skill>/scripts/tts.py V review`; the user reads `V/SCRIPT_REVIEW.md`.
-2. **Audio**: run `python <skill>/scripts/tts.py V all`, then make `V/narration.mp3` for listening (`ffmpeg -i V/narration.wav -b:a 64k V/narration.mp3`); the user listens to it. You cannot hear it: ask them to listen, especially for terms, numbers and English words.
+1. **Script**: read `script.md`, write `V/script.json`, run `python scripts/tts.py V review`; the user reads `V/SCRIPT_REVIEW.md`.
+2. **Audio**: run `python scripts/tts.py V all`, then make `V/narration.mp3` for listening (`ffmpeg -i V/narration.wav -b:a 64k V/narration.mp3`); the user listens to it. You cannot hear it: ask them to listen, especially for terms, numbers and English words.
 3. **Storyboard**: write `V/STORYBOARD.md`, in whatever form is clearest, using the times in `V/timeline.json`.
 4. **Build**: make the page `V/index.html` and review it (see "Review before handing over"). Do not render `V/final.mp4` in the cloud session unless the user asks: the user renders it on their own computer with one command (below), which is faster than the cloud VM.
 
@@ -46,21 +46,21 @@ The page (`V/index.html`), for `render.mjs`:
 - `window.draw(frame)` draws that frame and depends on nothing but the frame number, so any frame can be rendered alone and in any order.
 - `window.FRAMES`, `window.FPS`; `window.ready = false` until anything it loads is ready, then `true`.
 - Times tied to speech come from `V/timeline.js` (`window.TIMELINE`), never typed in, because the audio changes when the script changes.
-- Everything the page uses is inside `V/` (copy any library file into it), so the page renders without network access on any machine, including the user's own. Fonts too: `python <skill>/scripts/page_data.py V` writes `V/say.js` (the narration text, for subtitles) and `V/fonts/` (Noto Sans CJK SC and DejaVu Sans Mono cut to the characters the page uses); run it again after changing text.
+- Everything the page uses is inside `V/` (copy any library file into it), so the page renders without network access on any machine, including the user's own. Fonts too: `python scripts/page_data.py V` writes `V/say.js` (the narration text, for subtitles) and `V/fonts/` (Noto Sans CJK SC and DejaVu Sans Mono cut to the characters the page uses); run it again after changing text.
 - The audio element of the live preview loads `V/narration.mp3` (committed); `narration.wav` and `final.mp4` are not committed.
 - Any library is allowed, including WebGL ones. On the cloud VM WebGL runs in software, so frames are slower; this matters only for the final render.
-- Optional: `node <skill>/scripts/tex.mjs V` typesets `V/formulas.json` into `V/formulas.js`; `node <skill>/scripts/layout-check.mjs` reports overlapping text if the page lists its text boxes in `window.LAYOUT`.
+- Optional: `node scripts/tex.mjs V` typesets `V/formulas.json` into `V/formulas.js`; `node scripts/layout-check.mjs` reports overlapping text if the page lists its text boxes in `window.LAYOUT`.
 
-`assets/example/` in this skill is a working example of these interfaces.
+`assets/example/` in this skill (`.claude/skills/lesson-video/assets/example/`) is a working example of these interfaces.
 
 ## Checking your work
 
 You cannot watch the video. Render the frames you need and look at them:
 
 ```bash
-node <skill>/scripts/render.mjs V/index.html /tmp/check/s --stills 12.5s,18.2s     # chosen moments
-node <skill>/scripts/render.mjs V/index.html /tmp/check/sheet.jpg --sheet 1        # one frame per second
-node <skill>/scripts/render.mjs V/index.html /tmp/check/strip.jpg --strip 4.0:4.6  # every frame of a stretch, for motion
+node scripts/render.mjs V/index.html /tmp/check/s --stills 12.5s,18.2s     # chosen moments
+node scripts/render.mjs V/index.html /tmp/check/sheet.jpg --sheet 1        # one frame per second
+node scripts/render.mjs V/index.html /tmp/check/strip.jpg --strip 4.0:4.6  # every frame of a stretch, for motion
 ```
 
 Render only what you are checking.
@@ -70,7 +70,7 @@ Render only what you are checking.
 The build stage is finished only when all of these are done; report what each found:
 
 1. Stills of every scene, at the moment when everything in it is on screen (usually near the end of its last segment), and at the first frame of each section title. Look at each one: text inside its box, nothing overlapping, the right segment's content on screen, keys coloured and underlined as the storyboard says.
-2. `node <skill>/scripts/layout-check.mjs V/index.html --every 0.5` with the page listing its text in `window.LAYOUT`; every collision is fixed or explained (a crossfade between two labels is fine).
+2. `node scripts/layout-check.mjs V/index.html --every 0.5` with the page listing its text in `window.LAYOUT`; every collision is fixed or explained (a crossfade between two labels is fine).
 3. Every on-screen quotation from the plan is checked against the plan text.
 4. No page error: a still at the first frame of every scene (an element that is not visible yet must still return its geometry).
 
@@ -81,7 +81,7 @@ If you cannot view images, say so: the visual check has then not been done.
 From the repository root, after pulling the branch:
 
 ```bash
-python .claude/skills/lesson-video/scripts/final.py V
+python scripts/final.py V
 ```
 
 It installs the render tool's packages the first time, rebuilds `V/narration.wav` from the committed segment audio, and writes `V/final.mp4`. It needs Node.js 18+, Google Chrome and ffmpeg. `--stills 12.5s,80s` instead renders only those frames into `V/check/`. For a quick look without rendering, serve the folder (`python -m http.server` in `V/`) and open it in Chrome; the page plays with the narration.

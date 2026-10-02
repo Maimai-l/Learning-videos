@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """page_data.py: data files the video page loads, for one video folder (build stage, in the cloud session).
 
-Usage: python <skill>/scripts/page_data.py V
+Usage: python scripts/page_data.py V
 
 Writes V/say.js (window.SAY: the narration of each segment, for subtitles and timing) and V/fonts/*.woff2
 (Noto Sans CJK SC and DejaVu Sans Mono, cut down to the characters used by the page, so it renders offline).

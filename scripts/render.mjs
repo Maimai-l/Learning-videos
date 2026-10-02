@@ -28,7 +28,7 @@ import { writeFileSync, mkdtempSync, rmSync, renameSync, mkdirSync } from 'node:
 import { resolve, join, parse, format, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 
-// resolve playwright from the skill folder, else from the project you run it in (where you `npm i playwright-core`)
+// resolve playwright from the scripts folder, else from the project you run it in (where you `npm i playwright-core`)
 async function loadChromium() {
   for (const name of ['playwright-core', 'playwright']) {
     try { return (await import(name)).chromium; } catch {}

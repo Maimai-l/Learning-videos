@@ -1,9 +1,9 @@
 #!/bin/bash
 # Checks the environment, then runs the whole pipeline on the example video with silent placeholder audio.
 # Usage (from the repository root):
-#   bash <skill>/scripts/selftest.sh          environment + pipeline, no API call
-#   bash <skill>/scripts/selftest.sh --tts    also one real Gemini TTS call
-# The example is copied to /tmp/lesson-video-selftest, so nothing is written into the skill folder.
+#   bash scripts/selftest.sh          environment + pipeline, no API call
+#   bash scripts/selftest.sh --tts    also one real Gemini TTS call
+# The example is copied to /tmp/lesson-video-selftest, so nothing is written into the repository.
 cd "$(dirname "$0")" || exit 1     # the scripts folder
 
 echo "== tools"
@@ -19,7 +19,7 @@ if [ -n "${GEMINI_API_KEY:-}" ]; then echo "GEMINI_API_KEY: set"; else
 
 echo "== example pipeline (silent placeholder audio)"
 V=/tmp/lesson-video-selftest
-rm -rf $V && cp -r ../assets/example $V
+rm -rf $V && cp -r ../.claude/skills/lesson-video/assets/example $V
 python3 ./tts.py $V all --dry-run || exit 1
 node ./tex.mjs $V || exit 1
 node ./render.mjs $V/index.html $V/out/sheet.jpg --sheet 2 || exit 1

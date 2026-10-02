@@ -2,8 +2,8 @@
 """final.py: render the finished video V/final.mp4 on your own computer, in one command.
 
 Usage, from the repository root (Windows, macOS or Linux):
-  python .claude/skills/lesson-video/scripts/final.py videos/9618_ch8_C1-C8
-  python .claude/skills/lesson-video/scripts/final.py videos/9618_ch8_C1-C8 --stills 12.5s,80s   (check frames only)
+  python scripts/final.py videos/9618_ch8_C1-C8
+  python scripts/final.py videos/9618_ch8_C1-C8 --stills 12.5s,80s   (check frames only)
 
 It installs the render tool's packages the first time (npm ci), rebuilds V/narration.wav from the committed segment
 audio if it is missing, then renders. Extra arguments go to render.mjs; without --stills/--sheet/--strip the output
