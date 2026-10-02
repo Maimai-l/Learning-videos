@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>9618 Ch 8 Databases</title>
+<style>
+  @font-face { font-family: "NotoSC"; font-weight: 400; src: url(fonts/NotoSansSC-Regular.woff2) format("woff2"); }
+  @font-face { font-family: "NotoSC"; font-weight: 500; src: url(fonts/NotoSansSC-Regular.woff2) format("woff2"); }
+  @font-face { font-family: "NotoSC"; font-weight: 700; src: url(fonts/NotoSansSC-Bold.woff2) format("woff2"); }
+  @font-face { font-family: "DVMono"; font-weight: 400; src: url(fonts/DejaVuSansMono-Regular.woff2) format("woff2"); }
+  @font-face { font-family: "DVMono"; font-weight: 700; src: url(fonts/DejaVuSansMono-Bold.woff2) format("woff2"); }
+  html,body{margin:0;background:#202020;display:grid;place-items:center;height:100vh;color:#ddd;font:13px sans-serif}
+  canvas{width:min(100vw,177vh);height:auto;max-height:92vh}
+  #bar{width:min(100vw,177vh);display:flex;gap:8px;align-items:center}
+  #scrub{flex:1}
+</style>
+<!-- generated: timeline.js (tts.py timeline), say.js and fonts/ (tools/build_page_data.py) -->
+<script src="timeline.js"></script>
+<script src="say.js"></script>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="bar"><button id="play">play</button><input id="scrub" type="range" min="0" max="1" step="0.0001" value="0"><span id="tt"></span></div>
+<audio id="narr" src="narration.wav" preload="auto"></audio>
+<script>window.ready = false;</script>
+<script src="lib.js"></script>
+<script src="scenes/intro.js"></script>
+<script src="scenes/c1.js"></script>
+<script src="scenes/c2.js"></script>
+<script src="scenes/c3.js"></script>
+<script src="scenes/c4.js"></script>
+<script src="scenes/c5.js"></script>
+<script src="scenes/c6.js"></script>
+<script src="scenes/c7.js"></script>
+<script src="scenes/c8.js"></script>
+<script>
+(async () => {
+  for (const f of [font(40, 400), font(40, 700), font(40, 400, true), font(40, 700, true)]) await document.fonts.load(f, '数据 Data');
+  SCENES.sort((a, b) => T(a.a) - T(b.a));
+  window.ready = true;
+  if (location.search.includes('render')) { document.getElementById('bar').remove(); return; }
+  const au = document.getElementById('narr'), sc = document.getElementById('scrub'), tt = document.getElementById('tt');
+  document.getElementById('play').onclick = () => au.paused ? au.play() : au.pause();
+  sc.oninput = () => { au.currentTime = sc.value * DUR; };
+  const tick = () => {
+    const t = au.currentTime; draw(Math.min(FRAMES - 1, Math.round(t * FPS)));
+    if (!au.paused) sc.value = t / DUR;
+    tt.textContent = `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, '0')} / ${Math.floor(DUR / 60)}:${(DUR % 60).toFixed(0).padStart(2, '0')}`;
+    requestAnimationFrame(tick);
+  };
+  tick();
+})();
+</script>
+</body>
+</html>
