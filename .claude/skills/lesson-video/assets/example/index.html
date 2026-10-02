@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teaching video</title>
+<style>
+  html,body{margin:0;background:#202020;display:grid;place-items:center;height:100vh;color:#ddd;font:13px sans-serif}
+  canvas{width:min(100vw,177vh);height:auto;max-height:92vh}
+  #bar{width:min(100vw,177vh);display:flex;gap:8px;align-items:center}
+  #scrub{flex:1}
+</style>
+<!-- generated data: run  python scripts/tts.py <folder> all  and  node scripts/tex.mjs <folder>  first -->
+<script src="timeline.js"></script>
+<script src="formulas.js"></script>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="bar"><button id="play">play</button><input id="scrub" type="range" min="0" max="1" step="0.001" value="0"><span id="tt"></span></div>
+<audio id="narr" src="narration.wav" preload="auto"></audio>
+<script>
+// CONTRACT (scripts/render.mjs relies on it)
+// - draw(frame) is a pure function of the frame number: no state carried between frames, no Math.random, no Date.
+// - Every time comes from TIMELINE (generated from the narration). Never type a duration in seconds for something
+//   tied to speech: use T('S03') (segment start), E('S03') (speech end), P(t, 'S03', a, b) (progress), etc.
+// - window.ready stays false until formulas are decoded; the renderer waits for it.
+window.ready = false;
+const TL = window.TIMELINE, FORM = window.FORMULAS || {};
+if (!TL) document.body.innerHTML = '<p>timeline.js missing: run python tts.py &lt;this folder&gt; all</p>';
+const W = 1920, H = 1080, FPS = TL.fps, FRAMES = TL.frames, DUR = TL.duration;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+
+// ---------- timeline helpers ----------
+const SEG = Object.fromEntries(TL.segments.map(s => [s.id, s]));
+const seg = id => SEG[id] || (() => { throw new Error('unknown segment ' + id); })();
+const T = (id, k = 0) => seg(id).start + k;          // segment start (+ offset in seconds)
+const E = (id, k = 0) => seg(id).speech_end + k;     // end of the spoken text
+const END = (id, k = 0) => seg(id).end + k;          // end of the segment including its pause
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const easeOut = t => 1 - Math.pow(1 - clamp(t), 3);
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const P = (t, id, a = 0, b = .6) => prog(t, T(id, a), T(id, b));       // progress over [start+a, start+b]
+const appear = (t, at, d = .35) => easeOut(prog(t, at - .25, at - .25 + d)); // fade/slide in, starting 0.25 s before `at`
+const between = (t, a, b) => t >= a && t < b;
+
+// ---------- look: replace these per video (references/build.md, "Look") ----------
+const COL = {
+  bg: '#F6F3EC', ink: '#22252B', mute: '#8A8F98', rule: '#D9D3C7',
+  // one fixed colour per variable / idea for the whole video; write the table into STORYBOARD.md
+  a: '#C2543C', b: '#2F6F9F', c: '#4E8A4A', hi: '#F2C14E',
+};
+const CJK = '"Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",sans-serif';
+const FONT = (size, weight = 500) => `${weight} ${size}px "Noto Sans",${CJK}`;
+const SAFE = { x: 96, y: 64, w: W - 192, h: H - 128 };   // keep text inside
+
+// ---------- layout registry (read by scripts/layout-check.mjs) ----------
+let LAYOUT = [];
+function claim(id, kind, x, y, w, h) {             // kind 'text' | 'keep'; box in current transform -> screen px
+  const m = ctx.getTransform(), p = m.transformPoint(new DOMPoint(x, y)), q = m.transformPoint(new DOMPoint(x + w, y + h));
+  LAYOUT.push({ id, kind, x: Math.min(p.x, q.x), y: Math.min(p.y, q.y), w: Math.abs(q.x - p.x), h: Math.abs(q.y - p.y) });
+}
+
+// ---------- text ----------
+// text(id, str, x, y, {size, color, weight, align, alpha, base}) draws one line and claims its box.
+function text(id, str, x, y, o = {}) {
+  const { size = 48, color = COL.ink, weight = 500, align = 'left', alpha = 1, base = 'alphabetic' } = o;
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.font = FONT(size, weight); ctx.fillStyle = color;
+  ctx.textAlign = align; ctx.textBaseline = base; ctx.fillText(str, x, y);
+  const w = ctx.measureText(str).width, x0 = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  claim(id, 'text', x0, y - size * .9, w, size * 1.15);
+  ctx.restore();
+  return w;
+}
+
+// ---------- formulas (typeset by scripts/tex.mjs; drawn as images, so they are exact) ----------
+const IMG = {};
+async function loadFormulas() {
+  for (const [id, f] of Object.entries(FORM)) {
+    const svg = f.svg.replaceAll('currentColor', f.color || COL.ink);
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    await img.decode(); IMG[id] = img;
+  }
+}
+// formulaBox(id, x, y, size, align): where formula() will draw, without drawing (for highlights behind it)
+function formulaBox(id, x, y, size, align = 'left') {
+  const f = FORM[id]; if (!f) throw new Error('unknown formula ' + id);
+  const w = f.w * size, h = f.h * size;
+  return { x: align === 'center' ? x - w / 2 : align === 'right' ? x - w : x, y: y - f.ascent * size, w, h };
+}
+// formula(id, x, y, size, {align, alpha, reveal}): size = font size in px; y = baseline; reveal 0..1 wipes it on from the left
+function formula(id, x, y, size, o = {}) {
+  const img = IMG[id]; if (!img) throw new Error('unknown formula ' + id);
+  const { align = 'left', alpha = 1, reveal = 1 } = o; if (alpha <= 0 || reveal <= 0) return;
+  const { x: x0, y: y0, w, h } = formulaBox(id, x, y, size, align);
+  ctx.save(); ctx.globalAlpha *= alpha;
+  if (reveal < 1) { ctx.beginPath(); ctx.rect(x0 - 4, y0 - 4, w * reveal + 8, h + 8); ctx.clip(); }
+  ctx.drawImage(img, x0, y0, w, h); ctx.restore();
+  claim('formula ' + id, 'text', x0, y0, w, h);
+  return { x: x0, y: y0, w, h };
+}
+
+// ---------- shapes ----------
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function line(x0, y0, x1, y1, o = {}) {
+  const { w = 4, color = COL.ink, k = 1, dash = null } = o; if (k <= 0) return;
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = 'round'; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(lerp(x0, x1, k), lerp(y0, y1, k)); ctx.stroke(); ctx.restore();
+}
+function highlight(box, k, color = COL.hi) {      // marker swipe, k 0..1: draw it BEFORE the text it marks
+  if (k <= 0) return; ctx.save(); ctx.globalAlpha = .45; ctx.fillStyle = color;
+  rr(box.x - 8, box.y - 4, (box.w + 16) * clamp(k), box.h + 8, 10); ctx.fill(); ctx.restore();
+}
+
+// ---------- scenes ----------
+// Replace everything below with the storyboard. One function per scene; each reads its segment times.
+// DEMO (matches the example script: S01 question, S02 pairing, S03 formula). Delete it.
+function scene(t) {
+  // S01: the question, held while it is read
+  const q = appear(t, T('S01'));
+  text('question', '1 + 2 + 3 + … + 100 = ?', W / 2, 190, { size: 84, weight: 700, align: 'center', alpha: q });
+  // S02: pair first and last; each pair sums to 101
+  const n = 10, x0 = 456, dx = 112, y = 700;
+  for (let i = 0; i < n; i++) {
+    const a = appear(t, T('S02', .2 + i * .06));
+    const lbl = i < 4 ? String(i + 1) : i > 5 ? String(100 - (n - 1 - i)) : '…';
+    text('n' + i, lbl, x0 + i * dx, y, { size: 52, align: 'center', alpha: a, color: i < 4 ? COL.a : i > 5 ? COL.b : COL.mute });
+  }
+  for (let k = 0; k < 4; k++) {                       // arcs drawn one by one while the narration says "pair"
+    const p = ease(prog(t, T('S02', 1.2 + k * .35), T('S02', 1.6 + k * .35)));
+    if (p <= 0) continue;
+    const xa = x0 + k * dx, xb = x0 + (n - 1 - k) * dx, cx = (xa + xb) / 2, r = (xb - xa) / 2;
+    ctx.save(); ctx.strokeStyle = COL.ink; ctx.lineWidth = 3; ctx.beginPath();
+    const ry = r * .42;                                // flattened arcs above the row
+    ctx.ellipse(cx, y - 70, r, ry, 0, Math.PI, Math.PI + Math.PI * p, false); ctx.stroke(); ctx.restore();
+    text('pair' + k, '101', cx, y - 82 - ry, { size: 30, align: 'center', color: COL.mute, alpha: prog(p, .8, 1) });
+  }
+  // S03: the formula writes on, then the result is marked
+  if (t >= T('S03')) {
+    highlight(formulaBox('sum', W / 2, 900, 72, 'center'), ease(prog(t, E('S03', -1.2), E('S03', -.6))));   // behind the formula
+    formula('sum', W / 2, 900, 72, { align: 'center', reveal: ease(P(t, 'S03', 0, 1.2)) });
+  }
+}
+
+function draw(frame) {
+  const t = frame / FPS; LAYOUT = [];
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = COL.bg; ctx.fillRect(0, 0, W, H);
+  scene(t);
+  // fade from and to the background at the very start and end
+  const edge = Math.min(prog(t, 0, .4), 1 - prog(t, DUR - .6, DUR));
+  if (edge < 1) { ctx.save(); ctx.globalAlpha = 1 - edge; ctx.fillStyle = COL.bg; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+  window.LAYOUT = LAYOUT;
+}
+window.draw = draw; window.FRAMES = FRAMES; window.FPS = FPS;
+window.CUES = TL.segments.map(s => s.start);
+
+// ---------- start-up and live preview (render.mjs loads with ?render and drives draw() itself) ----------
+(async () => {
+  await document.fonts.load(FONT(48)); await loadFormulas();
+  window.ready = true;
+  if (location.search.includes('render')) { document.getElementById('bar').remove(); return; }
+  const au = document.getElementById('narr'), sc = document.getElementById('scrub'), tt = document.getElementById('tt');
+  document.getElementById('play').onclick = () => au.paused ? au.play() : au.pause();
+  sc.oninput = () => { au.currentTime = sc.value * DUR; };
+  const tick = () => {
+    const t = Math.min(au.currentTime, DUR - 1 / FPS); draw(Math.floor(t * FPS));
+    sc.value = t / DUR; const s = TL.segments.find(s => t >= s.start && t < s.end);
+    tt.textContent = `${t.toFixed(2)}s ${s ? s.id : ''}`; requestAnimationFrame(tick);
+  };
+  tick();
+})();
+</script>
+</body>
+</html>

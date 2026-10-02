@@ -1,2 +1,4 @@
 videos/*/narration.wav
 videos/*/final*.mp4
+videos/*/check/
+scripts/node_modules/

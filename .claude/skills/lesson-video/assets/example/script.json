@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "source": "demo (not from a lesson plan)",
+    "concepts": ["C1"],
+    "model": "gemini-3.8-flash-tts",
+    "voice": "Charon",
+    "style": "A calm, clear maths teacher speaking Mandarin Chinese to one secondary-school student. Even pace, no exaggerated emotion. Short natural pause at each comma.",
+    "chars_per_second": 4.5
+  },
+  "segments": [
+    {"id": "S01", "concept": "C1", "say": "从一加到一百，总和是多少？", "show": "Question 1 + 2 + … + 100 = ? centred", "pause": 0.8},
+    {"id": "S02", "concept": "C1", "say": "把第一个数和最后一个数配成一对，一加一百，二加九十九，三加九十八，每一对的和都是一百零一。", "show": "Numbers 1 2 3 4 … 97 98 99 100 in a row; arcs pair them one by one", "pause": 0.6},
+    {"id": "S03", "concept": "C1", "say": "一百个数正好组成五十对，所以总和是五十乘一百零一，等于五千零五十。", "show": "Formula writes on; result 5050 marked", "pause": 1.2}
+  ]
+}
