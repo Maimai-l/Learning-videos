@@ -1,0 +1,12 @@
+{
+  "name": "lesson-video-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "selftest": "bash selftest.sh"
+  },
+  "dependencies": {
+    "mathjax-full": "^3.2.2",
+    "playwright-core": "^1.55.0"
+  }
+}
