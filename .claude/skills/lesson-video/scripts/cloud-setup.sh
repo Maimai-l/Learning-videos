@@ -1,7 +1,7 @@
 #!/bin/bash
 # Setup script for a Claude Code cloud environment (claude.ai/code -> environment settings -> Setup script).
 # Runs as root on Ubuntu 24.04 before Claude Code starts; the result is cached for later sessions.
-# Installs: ffmpeg, Chinese/Japanese/Korean fonts, Chrome for Testing (+ its system libraries).
+# Installs: ffmpeg, Chinese/Japanese/Korean fonts, Chrome for Testing (+ its system libraries), edge-tts, fonttools.
 # Node packages of the repo (playwright-core, mathjax-full) are installed by the SessionStart hook in
 # .claude/settings.json, because this script does not know where the repository is.
 # Every host used here is on the default "Trusted" list (archive.ubuntu.com, registry.npmjs.org,
@@ -37,6 +37,10 @@ else
 fi
 
 fc-cache -f > /dev/null 2>&1 || true
+
+# 4. Python packages: Edge TTS (tts.py with meta.model "edge-tts") and font subsetting (page_data.py)
+log "pip: edge-tts fonttools brotli"
+pip install -q edge-tts fonttools brotli > /tmp/pip.log 2>&1 || log "pip install failed: $(tail -2 /tmp/pip.log)"
 log "ffmpeg: $(ffmpeg -version 2>/dev/null | head -1 | cut -c1-40)"
 log "CJK fonts: $(fc-list :lang=zh family | head -1)"
 log "done"

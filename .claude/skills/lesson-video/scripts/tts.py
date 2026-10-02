@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tts.py: narration audio and the timeline for one teaching video. Python standard library only.
+"""tts.py: narration audio and the timeline for one teaching video.
 
 Usage (DIR is the video's folder, e.g. videos/9709_ch3_C2)
   python tts.py DIR review                 write DIR/SCRIPT_REVIEW.md from DIR/script.json
@@ -10,17 +10,24 @@ Usage (DIR is the video's folder, e.g. videos/9709_ch3_C2)
 
 Writes DIR/audio/<id>.wav (cached per segment), DIR/narration.wav, DIR/timeline.json, DIR/timeline.js.
 
-API key: GEMINI_API_KEY is sent as x-goog-api-key if set; otherwise the request goes without a key, which works
-when the cloud environment attaches it (API credential for generativelanguage.googleapis.com).
-Model and voice come from script.json "meta"; TTS_MODEL / TTS_VOICE override them.
+Two engines, chosen by script.json "meta.model":
+  a Gemini TTS model (default "gemini-3.8-flash-tts"): standard library only. GEMINI_API_KEY is sent as x-goog-api-key
+    if set; otherwise the request goes without a key, which works when the cloud environment attaches it.
+    "voice" is a Gemini voice, "style" the director's notes.
+  "edge-tts": Microsoft Edge voices, no key. Needs `pip install edge-tts` and ffmpeg. "voice" is an Edge voice
+    (e.g. zh-CN-YunjianNeural), "rate" the speed (e.g. "+10%"). "style" is not used.
+TTS_MODEL / TTS_VOICE override the model and voice.
 """
-import base64, hashlib, json, os, re, struct, sys, time, urllib.error, urllib.request, wave
+import asyncio, base64, hashlib, json, os, re, struct, subprocess, sys, tempfile, time, urllib.error, urllib.request, wave
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VIDEO = SCRIPT = AUDIO = None      # set from the command line: the video's folder
 API = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 DEFAULT_MODEL = "gemini-3.8-flash-tts"
 DEFAULT_VOICE = "Charon"
+EDGE = "edge-tts"
+EDGE_VOICE = "zh-CN-YunjianNeural"
+EDGE_CONCURRENCY = 4
 LEAD_IN, TAIL = 0.6, 1.5          # silence before the first segment and after the last one
 DEFAULT_PAUSE = 0.5               # silence after a segment when it sets no "pause"
 
@@ -51,12 +58,19 @@ def load_script():
 
 def settings(s):
     m = s.get("meta", {})
+    model = os.environ.get("TTS_MODEL") or m.get("model") or DEFAULT_MODEL
     return {
-        "model": os.environ.get("TTS_MODEL") or m.get("model") or DEFAULT_MODEL,
-        "voice": os.environ.get("TTS_VOICE") or m.get("voice") or DEFAULT_VOICE,
+        "model": model,
+        "voice": os.environ.get("TTS_VOICE") or m.get("voice") or (EDGE_VOICE if model == EDGE else DEFAULT_VOICE),
         "style": m.get("style", "").strip(),
+        "speed": m.get("rate", "+0%"),                   # Edge only: speaking speed such as "+10%"
         "rate": float(m.get("chars_per_second", 4.5)),   # expected speaking rate, for the sanity check
     }
+
+
+def spoken(text):
+    # Edge's Chinese voices read "_" aloud (as the word for underscore); SHOP_ORDER should sound like SHOP ORDER.
+    return re.sub(r"(?<=\w)_(?=\w)", " ", text.strip())
 
 
 def prompt_for(cfg, seg):
@@ -69,7 +83,10 @@ def prompt_for(cfg, seg):
 
 
 def seg_hash(cfg, seg):
-    key = json.dumps([cfg["model"], cfg["voice"], prompt_for(cfg, seg)], ensure_ascii=False)
+    if cfg["model"] == EDGE:
+        key = json.dumps([EDGE, cfg["voice"], cfg["speed"], spoken(seg["say"])], ensure_ascii=False)
+    else:
+        key = json.dumps([cfg["model"], cfg["voice"], prompt_for(cfg, seg)], ensure_ascii=False)
     return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
 
 
@@ -130,28 +147,75 @@ def request_audio(cfg, seg):
     die(f"{seg['id']}: giving up: {last}")
 
 
+def edge_synth(cfg, segs):
+    """Synthesize segments with Edge TTS into AUDIO/<id>.wav (24 kHz mono, silence at both ends trimmed)."""
+    ca = os.environ.get("SSL_CERT_FILE")      # behind a TLS-terminating proxy, edge-tts needs the proxy's CA;
+    if ca and os.path.exists(ca):              # it reads certifi's path when imported, so set it first
+        try:
+            import certifi
+            certifi.where = lambda: ca
+        except ImportError:
+            pass
+    try:
+        import edge_tts
+    except ImportError:
+        die("meta.model is edge-tts: run `pip install edge-tts`")
+    trim = ("silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
+            "silenceremove=start_periods=1:start_threshold=-50dB,areverse")
+
+    async def one(sem, seg):
+        async with sem:
+            last = None
+            for attempt in range(5):
+                try:
+                    with tempfile.TemporaryDirectory() as d:
+                        mp3 = os.path.join(d, "a.mp3")
+                        await edge_tts.Communicate(spoken(seg["say"]), cfg["voice"], rate=cfg["speed"]).save(mp3)
+                        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp3, "-af", trim, "-ac", "1", "-ar", "24000",
+                                        "-c:a", "pcm_s16le", os.path.join(AUDIO, seg["id"] + ".wav")], check=True)
+                    return
+                except Exception as e:     # network errors and empty responses are both retried
+                    last = e
+                    print(f"  {seg['id']}: attempt {attempt + 1} failed ({e}); retrying")
+                    await asyncio.sleep(2 ** (attempt + 1))
+            die(f"{seg['id']}: giving up: {last}")
+
+    async def run():
+        sem = asyncio.Semaphore(EDGE_CONCURRENCY)
+        await asyncio.gather(*(one(sem, g) for g in segs))
+    asyncio.run(run())
+
+
 def synth(s, only=(), dry=False):
     cfg = settings(s)
     os.makedirs(AUDIO, exist_ok=True)
-    print(f"model {cfg['model']}, voice {cfg['voice']}" + ("  [dry run: silent placeholders]" if dry else ""))
-    warnings = []
+    edge = cfg["model"] == EDGE
+    extra = f", rate {cfg['speed']}" if edge else ""
+    print(f"model {cfg['model']}, voice {cfg['voice']}{extra}" + ("  [dry run: silent placeholders]" if dry else ""))
+    todo = []
     for seg in s["segments"]:
-        sid, h = seg["id"], seg_hash(cfg, seg)
-        wav, meta = os.path.join(AUDIO, sid + ".wav"), os.path.join(AUDIO, sid + ".json")
-        if sid not in only and os.path.exists(wav) and os.path.exists(meta):
+        wav, meta = os.path.join(AUDIO, seg["id"] + ".wav"), os.path.join(AUDIO, seg["id"] + ".json")
+        if seg["id"] not in only and os.path.exists(wav) and os.path.exists(meta):
             with open(meta, encoding="utf-8") as f:
-                if json.load(f).get("hash") == h:
+                if json.load(f).get("hash") == seg_hash(cfg, seg):
                     continue
+        todo.append(seg)
+    print(f"{len(todo)} of {len(s['segments'])} segments to synthesize")
+    if edge and not dry:
+        edge_synth(cfg, todo)
+    warnings = []
+    for seg in todo:
+        sid = seg["id"]
+        wav, meta = os.path.join(AUDIO, sid + ".wav"), os.path.join(AUDIO, sid + ".json")
         expected = max(0.8, spoken_chars(seg["say"]) / cfg["rate"])
         if dry:
-            rate = 24000
-            pcm = b"\x00\x00" * int(rate * expected)
-        else:
+            write_wav(wav, b"\x00\x00" * int(24000 * expected), 24000)
+        elif not edge:
             pcm, rate = request_audio(cfg, seg)
-        write_wav(wav, pcm, rate)
-        dur = len(pcm) / 2 / rate
+            write_wav(wav, pcm, rate)
+        dur = wav_info(wav)[1]
         with open(meta, "w", encoding="utf-8") as f:
-            json.dump({"hash": h, "seconds": round(dur, 3), "dry_run": dry}, f)
+            json.dump({"hash": seg_hash(cfg, seg), "seconds": round(dur, 3), "dry_run": dry, "engine": cfg["model"]}, f)
         ratio = dur / expected
         flag = ""
         if not dry and ratio > 2.0:

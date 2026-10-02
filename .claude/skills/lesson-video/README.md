@@ -59,19 +59,22 @@
 分镜确认，进行构建阶段。
 ```
 
-各阶段需要审阅的文件：`SCRIPT_REVIEW.md`、`narration.wav`、`STORYBOARD.md`、`final.mp4`，都在视频文件夹中，可从会话分支下载。
+各阶段需要审阅的文件：`SCRIPT_REVIEW.md`、`narration.mp3`、`STORYBOARD.md`，都在视频文件夹中，可从会话分支下载。构建阶段结束时，会话会报告检查结果（逐场景截图、文字重叠检查、引文核对），然后由你在本机渲染。
 
-## Windows 本机做最终渲染
+## 本机预览与最终渲染
 
-需要 Node.js 18 以上、Google Chrome、ffmpeg，以及本技能文件夹（把 `lesson-video.skill` 按 zip 解压到任意位置，下文 `<skill>` 即该路径）。拉取会话分支后在仓库根目录执行：
+技能已在仓库中（`.claude/skills/lesson-video`），不需要另外下载。拉取会话分支后，在仓库根目录执行：
 
 ```
-npm ci --prefix <skill>/scripts
-node <skill>/scripts/render.mjs videos/<视频名>/index.html videos/<视频名>/final.mp4 --audio videos/<视频名>/narration.wav
+python .claude/skills/lesson-video/scripts/final.py videos/<视频名>
 ```
+
+该命令首次运行时安装渲染工具的依赖，从已提交的分段音频重建 `narration.wav`，然后生成 `videos/<视频名>/final.mp4`。需要 Node.js 18 以上、Google Chrome、ffmpeg。只看几帧：在命令后加 `--stills 12.5s,80s`，图片输出到视频文件夹的 `check/`。
+
+不渲染、直接播放：在视频文件夹中执行 `python -m http.server 8000`，用 Chrome 打开 `http://localhost:8000/`，点 play。
 
 ## 说明
 
-- TTS 默认模型为 `gemini-3.8-flash-tts`。若报 HTTP 400 或 404，在视频的 `script.json` 中把 `meta.model` 改为 `gemini-3.1-flash-tts-preview`。
-- 云端 VM 没有 GPU，WebGL 以软件方式渲染；迭代时只渲染需要查看的帧，完整渲染只在最后做一次。
+- TTS 引擎由视频的 `script.json` 中 `meta.model` 决定：`edge-tts`（不需要密钥，`voice` 如 `zh-CN-YunjianNeural`，`rate` 如 `+10%`）或 Gemini 模型（如 `gemini-3.8-flash-tts`，需要有付费额度的密钥）。两者都用同一条命令 `tts.py V all`。
+- 云端 VM 没有 GPU，迭代时只渲染需要查看的帧；完整渲染在本机做。
 - 修改 `scripts/cloud-setup.sh` 后需重新粘贴到环境设置中。
